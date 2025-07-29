@@ -1,0 +1,5 @@
+# venv
+/crust/
+
+# pycache
+*/__pycache__/
