@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/badge/license-To%20Be%20Announced-yellow.svg)]()
 [![Made with ❤️](https://img.shields.io/badge/made%20with-%E2%9D%A4-red.svg)](https://github.com/mostypc123)
 
+THERE IS NO API KEY IN THE API KEY FILE. ITS THERE FOR THE PROJECT STRUCTURE.
+
 Crust is an interactive Linux shell written in Python, designed with a modern interface, AI integration, and enhanced tooling for common system tasks.
 Python devs, please add ✨**arrow support**✨ to `input()`.
 
