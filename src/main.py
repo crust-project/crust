@@ -301,10 +301,6 @@ while True:
                 subprocess.run(prompt, shell=True)
             except KeyboardInterrupt:
                 base.console.print("\n KeyboardInterrupt detected during command. Returning to prompt...\n", style="bold red")
-            finally:
-                # Save command to history
-                with open("history.txt", "a") as history_file:
-                    history_file.write(prompt + "\n")
     except KeyboardInterrupt:
         # Handle Ctrl+C to exit the shell
         base.console.print("\n KeyboardInterrupt detected. Exiting...\n", style="bold red")
