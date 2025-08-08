@@ -63,7 +63,7 @@ If the assistant suggests `.execute-command` or `.edit-file`, you’ll be asked 
 | `troubleshooting` | Run diagnostic and fix routines       |
 | `about`         | Print shell info and version             |
 
-All other commands fall back to system shell execution.
+All other commands fall back to Bash.
 
 ## 🔐 API Key
 
