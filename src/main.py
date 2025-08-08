@@ -7,6 +7,7 @@ import sys
 import cohere
 import troubleshooting
 import capk
+import lang
 
 # Try to run any custom startup commands
 try:
@@ -298,9 +299,15 @@ while True:
             continue
         else:
             try:
-                subprocess.run("bash" + prompt, shell=True) # TODO: Add languague detection, so all languagues work properly
+                language = lang.detect(prompt)
+                allowed = {"python3", "bash", "zsh", "fish"}
+                if language not in allowed:
+                    language = "bash"
+                cmd = [language, "-c", prompt]
+                subprocess.run(cmd)
             except KeyboardInterrupt:
                 base.console.print("\n KeyboardInterrupt detected during command. Returning to prompt...\n", style="bold red")
+
     except KeyboardInterrupt:
         # Handle Ctrl+C to exit the shell
         base.console.print("\n KeyboardInterrupt detected. Exiting...\n", style="bold red")
