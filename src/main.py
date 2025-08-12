@@ -298,7 +298,7 @@ while True:
             continue
         else:
             try:
-                subprocess.run("bash " + prompt, shell=True) # TODO: Add languague detection, so all languagues work properly
+                subprocess.run(["bash", prompt]) # TODO: Add languague detection, so all languagues work properly
             except KeyboardInterrupt:
                 base.console.print("\n KeyboardInterrupt detected during command. Returning to prompt...\n", style="bold red")
     except KeyboardInterrupt:
