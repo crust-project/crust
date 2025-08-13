@@ -21,9 +21,6 @@ aliases = importlib.util.module_from_spec(spec)
 sys.modules["aliases"] = aliases
 spec.loader.exec_module(aliases)
 
-# Now you can use aliases.<something>
-
-
 # Try to run any custom startup commands
 try:
     custom_commands.main()
