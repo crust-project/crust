@@ -7,6 +7,22 @@ import sys
 import cohere
 import troubleshooting
 import capk
+import config_find
+import importlib.util
+from pathlib import Path
+
+configs = config_find.find_crust_folder()
+print(configs)
+
+file_path = Path(configs + "/aliases.py")
+
+spec = importlib.util.spec_from_file_location("aliases", file_path)
+aliases = importlib.util.module_from_spec(spec)
+sys.modules["aliases"] = aliases
+spec.loader.exec_module(aliases)
+
+# Now you can use aliases.<something>
+
 
 # Try to run any custom startup commands
 try:
@@ -165,7 +181,7 @@ while True:
             os.chdir(entered_dir)
         
         elif prompt.startswith(".question"):
-            with open("cohere-api-key.txt", "r") as f:
+            with open(configs + "/cohere-api-key.txt", "r") as f:
                 key = f.read().strip()
 
             try:
@@ -297,10 +313,21 @@ while True:
         if prompt in ["about", "lsusb", "ls", "ls -l", "ls -la", "disk usage", "df -h"] or prompt.startswith(".question") or prompt.startswith("capk "):
             continue
         else:
+            # Check for aliases
+            command_parts = prompt.split()
+            if command_parts:
+                first_command = command_parts[0]
+                # Check if the first command is an alias
+                if hasattr(aliases, first_command):
+                    alias_command = getattr(aliases, first_command)
+                    # Replace the first part with the alias command
+                    command_parts[0] = alias_command
+                    prompt = ' '.join(command_parts)
+            
             try:
-                subprocess.run(f"bash -c {prompt}", shell=True) # TODO: Add languague detection, so all languagues work properly
+                subprocess.run(f"bash -c {prompt}", shell=True)
             except KeyboardInterrupt:
-                base.console.print("\n KeyboardInterrupt detected during command. Returning to prompt...\n", style="bold red")
+                base.console.print("\n KeyboardInterrupt detected during command. Returning to prompt...\n", style="bold red")
     except KeyboardInterrupt:
         # Handle Ctrl+C to exit the shell
         base.console.print("\n KeyboardInterrupt detected. Exiting...\n", style="bold red")
