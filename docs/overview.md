@@ -4,7 +4,7 @@ Crust Shell is a modern, feature-rich terminal shell written in Python that enha
 
 ## 🌟 What is Crust Shell?
 
-Crust Shell is an interactive command-line shell that wraps around your existing system shell (bash, zsh, etc.) while providing additional functionality and a much more visually appealing interface. It's designed to make terminal work more productive and enjoyable.
+Crust Shell is an interactive command-line shell that uses Bash as the scripting language, while providing additional functionality and a much more visually appealing interface. It's designed to make terminal work more productive and enjoyable.
 
 ## 🎯 Key Features
 
