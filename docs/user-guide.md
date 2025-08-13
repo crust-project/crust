@@ -232,19 +232,6 @@ troubleshooting
 # Enter when you encounter development issues
 ```
 
-## 🚫 Command Limitations
-
-### What Crust Shell Doesn't Do
-- **No built-in text editing**: Use the `edit` alias or your preferred editor
-- **No process management**: Use system commands for background processes
-- **No shell scripting**: For complex scripts, use bash/zsh scripts
-
-### Best Practices
-1. **Use for interactive work**: Crust Shell excels at interactive terminal sessions
-2. **Combine with system shell**: Use system shell for scripting, Crust for daily tasks
-3. **Leverage AI features**: Don't hesitate to ask questions or use troubleshooting mode
-4. **Customize aliases**: Set up aliases for your most common commands
-
 ## 🔍 Troubleshooting Usage
 
 ### Command Not Working?
