@@ -38,24 +38,6 @@ removepkg = "sudo pacman -R"  # Arch Linux
 # removepkg = "sudo dnf remove"  # Fedora
 ```
 
-#### Advanced Configuration
-```python
-# Custom system information command
-sysinfo_cmd = "neofetch"  # or "screenfetch", "inxi", etc.
-
-# Default browser for web-based commands
-browser = "firefox"  # or "chromium", "chrome", "safari", etc.
-
-# Terminal multiplexer preference
-multiplexer = "tmux"  # or "screen"
-
-# Default Python version
-python_cmd = "python3"
-
-# Preferred package manager for multi-platform environments
-preferred_pkg_manager = "pip"  # or "conda", "pipenv", "poetry"
-```
-
 ### 2. Aliases Configuration (`aliases.py`)
 
 Located at: `.crust/aliases.py`
