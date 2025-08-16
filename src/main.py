@@ -10,6 +10,7 @@ import capk
 import config_find
 import importlib.util
 from pathlib import Path
+import aur_check
 
 configs = config_find.find_crust_folder()
 print(configs)
@@ -104,6 +105,9 @@ while True:
                 base.console.print(table)
             except Exception as e:
                 base.console.print(f"󰅚 Error listing directory: {e}", style="bold red")
+        elif prompt.startswith("aur_check"):
+            pkg = prompt.strip().replace("aur_check ", "")
+            aur_check.main(pkg)
         elif prompt == "disk usage" or prompt == "df -h":
             try:
                 output = subprocess.check_output(["df", "-h"], text=True)
@@ -307,7 +311,7 @@ while True:
 
 
         # For all other commands, run them in the shell
-        if prompt in ["about", "lsusb", "ls", "ls -l", "ls -la", "disk usage", "df -h"] or prompt.startswith(".question") or prompt.startswith("capk "):
+        if prompt in ["about", "lsusb", "ls", "ls -l", "ls -la", "disk usage", "df -h"] or prompt.startswith(".question") or prompt.startswith("capk ") or prompt.startswith("aur_check"):
             continue
         else:
             # Check for aliases
