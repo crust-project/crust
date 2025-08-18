@@ -24,6 +24,11 @@ Python devs, please add ✨**arrow support**✨ to `input()`.
 ## 📖 Documentation
 https://mostypc123.is-a.dev/crust
 
+Very quick installation:
+```bash
+git clone https://github.com/mostypc123/crust && cd crust && pip install . && cd .. && rm -rf crust
+```
+
 ## 🛡️ License
 
 This project is currently under development. License information will be provided in future versions.
