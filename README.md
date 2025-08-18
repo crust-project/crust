@@ -2,7 +2,7 @@
 # 🐚 Crust Shell
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-linux-lightblue.svg)](https://kernel.org)
-[![License](https://img.shields.io/badge/license-To%20Be%20Announced-yellow.svg)]()
+[![License](https://img.shields.io/badge/license-edited%20MIT-yellow.svg)]()
 [![Made with ❤️](https://img.shields.io/badge/made%20with-%E2%9D%A4-red.svg)](https://github.com/mostypc123)
 
 THERE IS NO API KEY IN THE API KEY FILE. ITS THERE FOR THE PROJECT STRUCTURE.

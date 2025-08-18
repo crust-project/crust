@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crust-shell"
+version = "0.1.0"
+description = "Crust – a Python-based Linux shell with aliases and interactive configuration."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Juraj Kollár" }
+]
+requires-python = ">=3.8"
+dependencies = [
+  "rich", "requests", "cohere"
+]
+
+[project.scripts]
+crust = "main:main"
