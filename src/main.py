@@ -13,21 +13,27 @@ from pathlib import Path
 import aur_check
 
 configs = config_find.find_crust_folder()
+if configs == None: configs = "default"; print("warn: configs are set as default")
 print(configs)
 
-file_path = Path(str(configs) + "/aliases.py")
+try:
+    file_path = Path(str(configs) + "/aliases.py")
 
-spec = importlib.util.spec_from_file_location("aliases", file_path)
-aliases = importlib.util.module_from_spec(spec)
-sys.modules["aliases"] = aliases
-spec.loader.exec_module(aliases)
+    spec = importlib.util.spec_from_file_location("aliases", file_path)
+    aliases = importlib.util.module_from_spec(spec)
+    sys.modules["aliases"] = aliases
+    spec.loader.exec_module(aliases)
+except Exception as e:
+    print(f"warn: no aliases were loaded due to an {e} error")
 
+# todo: move to .crust
 # Try to run any custom startup commands
+"""
 try:
     custom_commands.main()
 except Exception as e:
-    # Print error if custom commands fail
-    base.console.print(f" Error executing custom commands: {e}", style="bold red")
+    pass
+"""
 
 def main():
     # Main interactive shell loop
@@ -183,6 +189,7 @@ def main():
                 os.chdir(entered_dir)
             
             elif prompt.startswith(".question"):
+                if configs == "default": print("No configuration."); continue
                 with open(configs + "/cohere-api-key.txt", "r") as f:
                     key = f.read().strip()
 
@@ -315,17 +322,19 @@ def main():
             if prompt in ["about", "lsusb", "ls", "ls -l", "ls -la", "disk usage", "df -h"] or prompt.startswith(".question") or prompt.startswith("capk ") or prompt.startswith("aur_check"):
                 continue
             else:
-                # Check for aliases
-                command_parts = prompt.split()
-                if command_parts:
-                    first_command = command_parts[0]
-                    # Check if the first command is an alias
-                    if hasattr(aliases, first_command):
-                        alias_command = getattr(aliases, first_command)
-                        # Replace the first part with the alias command
-                        command_parts[0] = alias_command
-                        prompt = ' '.join(command_parts)
-                
+                try:
+                    # Check for aliases
+                    command_parts = prompt.split()
+                    if command_parts:
+                        first_command = command_parts[0]
+                        # Check if the first command is an alias
+                        if hasattr(aliases, first_command):
+                            alias_command = getattr(aliases, first_command)
+                            # Replace the first part with the alias command
+                            command_parts[0] = alias_command
+                            prompt = ' '.join(command_parts)
+                except Exception as e:
+                    print(f"error checking for aliases\n>tip: you likely have no .crust folder in your computer\nmessage: {e}")
                 try:
                     subprocess.run(f"bash -c {prompt}", shell=True)
                 except KeyboardInterrupt:
