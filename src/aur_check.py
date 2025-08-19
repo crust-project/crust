@@ -43,7 +43,7 @@ def main(package):
         }]
 
     response = co.chat(message=prompt, chat_history=history)
-    print(response.text.replace("*", "").replace("`", "")
+    print(response.text.replace("*", "").replace("`", ""))
 
 if __name__ == "__main__":
     print("Running aur_check separately from Crust.")
