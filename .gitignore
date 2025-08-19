@@ -3,3 +3,6 @@
 
 # pycache
 */__pycache__/
+
+# api key
+/.crust/cohere-api-key.txt
