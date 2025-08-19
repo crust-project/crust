@@ -15,7 +15,7 @@ import aur_check
 configs = config_find.find_crust_folder()
 print(configs)
 
-file_path = Path(configs + "/aliases.py")
+file_path = Path(str(configs) + "/aliases.py")
 
 spec = importlib.util.spec_from_file_location("aliases", file_path)
 aliases = importlib.util.module_from_spec(spec)

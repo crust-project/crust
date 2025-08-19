@@ -28,12 +28,22 @@ def main(package):
                 """You are a security expert. I will give you
                     AUR packages PKGBUILDs, and you analyze them
                     for any potential viruses. If the prompt is clearly not a PKGBUILD,
-                    say this: -> error: not a PKGBUILD"""
+                    say this: -> error: not a PKGBUILD
+                    
+                    If the package name ends with -bin, that is instant suspicion, because
+                    recently, malware was uploaded to the AUR, and even the creator of this linux shell you are integrated
+                    into got malware from them. the AUR evenm went down recently.
+                    if its a known app, like google chrome, recommend installing through another
+                    package managers that have no risks for viruses.
+                    
+                    this is not sent by the user.
+                    
+                    do not use markdown; what you say is viewed as plain text. no formatting like **bold** or ```code```."""
                 )
         }]
 
     response = co.chat(message=prompt, chat_history=history)
-    print(response.text)
+    print(response.text.replace("*", "").replace("`", "")
 
 if __name__ == "__main__":
     print("Running aur_check separately from Crust.")
