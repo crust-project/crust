@@ -11,6 +11,8 @@ import config_find
 import importlib.util
 from pathlib import Path
 import aur_check
+import readline
+import glob
 
 configs = config_find.find_crust_folder()
 if configs == None: configs = "default"; print("warn: configs are set as default")
@@ -35,7 +37,127 @@ except Exception as e:
     pass
 """
 
+# Setup readline history and completion
+def setup_readline():
+    """Configure readline for command history and tab completion"""
+    # Set up history file
+    history_file = os.path.expanduser("~/.crust_history")
+    
+    try:
+        # Load existing history
+        readline.read_history_file(history_file)
+        # Set maximum history length
+        readline.set_history_length(1000)
+    except FileNotFoundError:
+        # History file doesn't exist yet, will be created when we save
+        pass
+    except Exception as e:
+        print(f"Warning: Could not load command history: {e}")
+    
+    # Set up tab completion
+    readline.set_completer(tab_completer)
+    readline.parse_and_bind('tab: complete')
+    
+    # Enable history search with arrow keys
+    readline.parse_and_bind('"\\e[A": history-search-backward')
+    readline.parse_and_bind('"\\e[B": history-search-forward')
+    
+    return history_file
+
+def tab_completer(text, state):
+    """Tab completion function for files, directories, and commands"""
+    if state == 0:
+        # This is the first time for this text, generate matches
+        line = readline.get_line_buffer()
+        
+        # Get current line up to cursor
+        begin_idx = readline.get_begidx()
+        end_idx = readline.get_endidx()
+        
+        # Split the line into parts
+        words = line[:begin_idx].split()
+        
+        # Built-in commands that should be completed
+        builtin_commands = [
+            'ls', 'cd', 'about', 'lsusb', 'disk', 'troubleshooting',
+            'capk', 'aur_check', '.question'
+        ]
+        
+        # Common shell commands
+        common_commands = [
+            'ls', 'cd', 'pwd', 'mkdir', 'rmdir', 'rm', 'cp', 'mv',
+            'cat', 'less', 'more', 'head', 'tail', 'grep', 'find',
+            'which', 'whereis', 'ps', 'top', 'htop', 'kill', 'killall',
+            'chmod', 'chown', 'ln', 'du', 'df', 'free', 'uname',
+            'whoami', 'date', 'uptime', 'history', 'clear', 'exit',
+            'git', 'python', 'python3', 'pip', 'pip3', 'nano', 'vim',
+            'emacs', 'code', 'wget', 'curl', 'ssh', 'scp', 'rsync'
+        ]
+        
+        if len(words) == 0 or (len(words) == 1 and begin_idx == end_idx):
+            # Completing the first word (command)
+            all_commands = list(set(builtin_commands + common_commands))
+            tab_completer.matches = [cmd for cmd in all_commands if cmd.startswith(text)]
+        else:
+            # Completing arguments (file/directory names)
+            if text.startswith('~'):
+                # Handle home directory expansion
+                path = os.path.expanduser(text)
+                prefix = '~'
+            else:
+                path = text
+                prefix = ''
+            
+            # Get directory path and filename pattern
+            if os.path.sep in path:
+                dirname = os.path.dirname(path)
+                basename = os.path.basename(path)
+            else:
+                dirname = '.'
+                basename = path
+            
+            try:
+                # Get all files and directories matching the pattern
+                if dirname:
+                    entries = os.listdir(dirname if dirname != '.' else os.getcwd())
+                else:
+                    entries = os.listdir('.')
+                
+                matches = []
+                for entry in entries:
+                    if entry.startswith(basename):
+                        full_path = os.path.join(dirname, entry) if dirname != '.' else entry
+                        if prefix:
+                            full_path = prefix + full_path[len(os.path.expanduser(prefix)):]
+                        
+                        # Add trailing slash for directories
+                        if os.path.isdir(os.path.join(dirname if dirname != '.' else '.', entry)):
+                            matches.append(full_path + os.path.sep)
+                        else:
+                            matches.append(full_path)
+                
+                tab_completer.matches = matches
+            except (OSError, PermissionError):
+                # If we can't read the directory, no matches
+                tab_completer.matches = []
+    
+    # Return the next match
+    try:
+        return tab_completer.matches[state]
+    except (AttributeError, IndexError):
+        return None
+
+def save_history(history_file):
+    """Save command history to file"""
+    try:
+        readline.write_history_file(history_file)
+    except Exception as e:
+        print(f"Warning: Could not save command history: {e}")
+
 def main():
+    # Initialize readline for history and tab completion
+    history_file = setup_readline()
+    
     # Main interactive shell loop
     while True:
         try:
@@ -88,8 +210,15 @@ def main():
                 end=""
             )
 
-            # Read user input
-            prompt = input()
+            # Read user input with readline (supports history and tab completion)
+            try:
+                prompt = input()
+                # Add non-empty commands to history
+                if prompt.strip():
+                    readline.add_history(prompt)
+            except (EOFError, KeyboardInterrupt):
+                # Handle Ctrl+D or Ctrl+C
+                raise
 
             # Handle 'ls' command: show directory listing in a table
             if prompt == "ls" or prompt == "ls -l" or prompt == "ls -la":
@@ -336,19 +465,26 @@ def main():
                 except Exception as e:
                     print(f"error checking for aliases\n>tip: you likely have no .crust folder in your computer\nmessage: {e}")
                 try:
-                    subprocess.run(f"bash -c {prompt}", shell=True)
+                    subprocess.run(["bash", "-c", prompt])
                 except KeyboardInterrupt:
                     base.console.print("\n KeyboardInterrupt detected during command. Returning to prompt...\n", style="bold red")
         except KeyboardInterrupt:
             # Handle Ctrl+C to exit the shell
-            base.console.print("\n KeyboardInterrupt detected. Exiting...\n", style="bold red")
+            base.console.print("\n KeyboardInterrupt detected. Exiting...\n", style="bold red")
             base.console.file.flush()
             time.sleep(0.1) # Allow time for console to flush
+            break
+        except EOFError:
+            # Handle Ctrl+D to exit the shell
+            base.console.print("\n[cyan]Goodbye![/cyan]\n", style="bold")
             break
         except Exception as e:
             # Catch-all for unexpected errors
             base.console.print(f"󰅚 An error occurred: {e}", style="bold red")
             continue
+    
+    # Save command history before exiting
+    save_history(history_file)
 
 if __name__ == "__main__":
     main()
