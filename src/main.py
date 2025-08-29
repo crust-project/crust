@@ -12,7 +12,8 @@ import importlib.util
 from pathlib import Path
 import aur_check
 import readline
-import glob
+import ctnp
+import cd
 
 configs = config_find.find_crust_folder()
 if configs == None: configs = "default"; print("warn: configs are set as default")
@@ -79,8 +80,8 @@ def tab_completer(text, state):
         
         # Built-in commands that should be completed
         builtin_commands = [
-            'ls', 'cd', 'about', 'lsusb', 'disk', 'troubleshooting',
-            'capk', 'aur_check', '.question'
+            'ls', 'cd', 'about', 'lsusb', 'disk usage', 'troubleshooting',
+            'capk', 'aur_check', '.question', 'ctnp'
         ]
         
         # Common shell commands
@@ -295,8 +296,11 @@ def main():
                 except Exception as e:
                     base.console.print(f"󰅚 Error running lsusb: {e}", style="bold red")
             elif prompt == "troubleshooting":
-                print("Connecting...")
                 troubleshooting.run()
+            elif prompt == "cd .." and os.getcwd() == "/":
+                print("THERE IS NO ESCAPE")
+                time.sleep(1)
+                os.system("curl ascii.live/rick")
             elif prompt == "about":
                 from rich.table import Table as RichTable
                 plus_lines = [" + ", "+++", " + "]
@@ -315,8 +319,20 @@ def main():
 
             elif prompt.startswith("cd"):
                 entered_dir = prompt.replace("cd ", "")
-                os.chdir(entered_dir)
-            
+                try:
+                    os.chdir(entered_dir)
+                except Exception:
+                    cd.main(entered_dir)
+
+            elif prompt.startswith("ctnp"):
+                print("ctnp - create the next project")
+
+                args = prompt.replace("ctnp ", "").strip()
+                if args.startswith("python"):
+                    project_parts = args.split()
+                    project_name = project_parts[1] if len(project_parts) > 1 else "my_project"
+                    ctnp.python(project_name)
+
             elif prompt.startswith(".question"):
                 if configs == "default": print("No configuration."); continue
                 with open(configs + "/cohere-api-key.txt", "r") as f:
@@ -384,6 +400,7 @@ def main():
 
                     if line.startswith(".execute-command"):
                         command = line.replace(".execute-command", "").strip()
+
                         base.console.print("[magenta on white]Found an execution of a command in the response[/magenta on white]")
                         base.console.print(f"[bold green]OK if I execute this command? yes/no:[/bold green] [white]{command}[/white]")
                         exec_it = input()
@@ -448,7 +465,7 @@ def main():
 
 
             # For all other commands, run them in the shell
-            if prompt in ["about", "lsusb", "ls", "ls -l", "ls -la", "disk usage", "df -h"] or prompt.startswith(".question") or prompt.startswith("capk ") or prompt.startswith("aur_check"):
+            if prompt in ["about", "lsusb", "ls", "ls -l", "ls -la", "disk usage", "df -h"] or prompt.startswith(".question") or prompt.startswith("cd") or prompt.startswith("capk ") or prompt.startswith("aur_check") or prompt.startswith("ctnp"):
                 continue
             else:
                 try:
