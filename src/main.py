@@ -66,7 +66,21 @@ def setup_readline():
     return history_file
 
 def tab_completer(text, state):
-    """Tab completion function for files, directories, and commands"""
+    """
+    Return successive completion strings for the readline completer.
+    
+    This function is used as a readline tab-completion callback. On the first call for a given completion attempt (state == 0) it builds a list of candidate completions and caches them on the function as `tab_completer.matches`. Behavior:
+    - If completing the first word (no prior words or the cursor is at the end of the first word), it completes command names from a union of built-in and common shell commands.
+    - Otherwise it completes filesystem entries. Supports `~` expansion for the home directory, lists the target directory, and matches entries that start with the typed basename. Directory candidates are returned with a trailing os.path.sep.
+    - If the target directory cannot be read (permission or OSError), no matches are produced.
+    
+    Parameters:
+        text (str): The current token to complete.
+        state (int): The completion index requested by readline (0..n). On first call for a given text this function prepares the candidate list.
+    
+    Returns:
+        str | None: The matching completion string for the requested state, or None when no more matches are available.
+    """
     if state == 0:
         # This is the first time for this text, generate matches
         line = readline.get_line_buffer()
@@ -157,6 +171,11 @@ def save_history(history_file):
 
 def main():
     # Initialize readline for history and tab completion
+    """
+    Run the interactive Crust shell REPL: initialize readline (history and tab completion), display a prompt with VENV and git context, read user input, and dispatch built-in commands, shell commands, alias expansion, and the AI-assisted `.question` flow. The loop handles special built-ins (ls, lsusb, disk usage/df, aur_check, capk, troubleshooting, about, cd, ctnp), supports alias replacement, and falls back to invoking the system shell for other commands.
+    
+    This function has multiple side effects: it changes the current working directory, executes external commands, may read/write files (including overwriting files when handling `.edit-file` from the AI), creates/uses a Cohere client for the `.question` flow, and saves command history on exit. It handles Ctrl+C and Ctrl+D to exit cleanly and catches unexpected errors to keep the REPL running.
+    """
     history_file = setup_readline()
     
     # Main interactive shell loop
