@@ -318,10 +318,18 @@ def main():
                 continue
 
             elif prompt.startswith("cd"):
-                entered_dir = prompt.replace("cd ", "")
+                # Extract the directory argument
+                if prompt.strip() == "cd":
+                    # No argument provided, go to HOME
+                    entered_dir = os.path.expanduser("~")
+                else:
+                    # Extract argument and expand ~ if present
+                    arg = prompt[2:].strip()  # Remove 'cd' and strip whitespace
+                    entered_dir = os.path.expanduser(arg)
+                
                 try:
                     os.chdir(entered_dir)
-                except Exception:
+                except (FileNotFoundError, NotADirectoryError, PermissionError):
                     cd.main(entered_dir)
 
             elif prompt.startswith("ctnp"):
