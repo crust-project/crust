@@ -10,6 +10,11 @@ cd src
 python main.py
 ```
 
+if installed normally,
+```bash
+crust
+```
+
 Once started, you'll see the Crust Shell prompt with:
 - Git repository and branch information (if in a git repo)
 - Virtual environment name (if active)

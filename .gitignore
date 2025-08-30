@@ -5,4 +5,8 @@
 */__pycache__/
 
 # api key
-/.crust/cohere-api-key.txt
+*cohere-api-key.txt
+
+# any dotfiles
+.idea
+.vscode
