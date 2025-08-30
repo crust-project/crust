@@ -1,64 +1,54 @@
 import os
 
 def search_directory(directory, target):
-    """Iteratively search for a directory named target using BFS with cycle detection"""
+    """
+    Recursively search for a directory named `target` starting from `directory`.
     
-    # Use a stack for iterative traversal (could also use deque for true BFS)
-    stack = [directory]
-    visited_inodes = set()
+    Searches the filesystem depth-first: first checks immediate subdirectories under `directory` for a name match, then recursively searches each subdirectory. Prints progress for each directory checked. PermissionError and OSError while listing a directory are caught, a diagnostic message is printed, and the search continues.
     
-    while stack:
-        current_dir = stack.pop()
-        
-        try:
-            # Get inode info for cycle detection
-            stat_info = os.stat(current_dir)
-            inode_key = (stat_info.st_dev, stat_info.st_ino)
-            
-            # Skip if we've already visited this inode (handles hard links and cycles)
-            if inode_key in visited_inodes:
-                continue
-            visited_inodes.add(inode_key)
-            
-            # Use os.scandir for better performance
-            with os.scandir(current_dir) as entries:
-                # First pass: check if target exists in current directory
-                for entry in entries:
-                    if entry.is_dir(follow_symlinks=False):
-                        print(f"    📁 Checking directory: {entry.name}")
-                        if entry.name == target:
-                            return entry.path
-                
-                # Second pass: add subdirectories to stack for further searching
-                # Reset the scandir iterator
+    Parameters:
+        directory (str): Filesystem path to start searching from.
+        target (str): Name of the directory to find.
+    
+    Returns:
+        str or None: The full path to the first found directory named `target`, or None if not found or if an error prevents accessing parts of the tree.
+    """
+
+    try:
+        items = os.listdir(directory)
+
+        # Check if target directory exists in current directory
+        for item in items:
+            item_path = os.path.join(directory, item)
+            if os.path.isdir(item_path):
+                print(f"    📁 Checking directory: {item}")
+                if item == target:
+                    return item_path
+            else:
                 pass
-            
-            # Rescan for subdirectories to add to stack
-            with os.scandir(current_dir) as entries:
-                for entry in entries:
-                    if entry.is_dir(follow_symlinks=False):
-                        # Skip symlinked directories to prevent infinite recursion
-                        if entry.is_symlink():
-                            print(f"    🔗 Skipping symlinked directory: {entry.name}")
-                            continue
-                        
-                        # Check if we've already visited this inode
-                        try:
-                            entry_stat = entry.stat(follow_symlinks=False)
-                            entry_inode = (entry_stat.st_dev, entry_stat.st_ino)
-                            if entry_inode not in visited_inodes:
-                                stack.append(entry.path)
-                        except (PermissionError, OSError):
-                            # Skip directories we can't stat
-                            continue
-                            
-        except (PermissionError, OSError) as e:
-            print(f"    ❌ Permission denied or error in {current_dir}: {e}")
-            continue
-    
+
+        # If not found, recursively search subdirectories
+        for item in items:
+            item_path = os.path.join(directory, item)
+            if os.path.isdir(item_path):
+                result = search_directory(item_path, target)
+                if result:
+                    return result
+    except (PermissionError, OSError) as e:
+        print(f"    ❌ Permission denied or error in {directory}: {e}")
+        pass
+
     return None
 
 def main(find_item):
+    """
+    Search for a directory named `find_item` starting from the current working directory, print progress, and if found attempt to change into it.
+    
+    Displays a sorted list of immediate subdirectories in the current working directory, then performs a recursive search for the first directory whose name matches `find_item`. Prints status messages for start, progress, errors, success, and failure. If the target is found, attempts to change the process's current working directory to the found path; any permission or OS errors are caught and only reported (not raised).
+    
+    Parameters:
+        find_item (str): Name of the directory to locate (matched against directory basenames). The search is case-sensitive and returns the first match found in a depth-first traversal.
+    """
     start_dir = os.getcwd()
     print(f"Starting search from: {start_dir}")
     print(f"Looking for directory: {find_item}")
