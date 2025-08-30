@@ -1,32 +1,61 @@
 import os
 
 def search_directory(directory, target):
-    """Recursively search for a directory named target starting from directory"""
-
-    try:
-        items = os.listdir(directory)
-
-        # Check if target directory exists in current directory
-        for item in items:
-            item_path = os.path.join(directory, item)
-            if os.path.isdir(item_path):
-                print(f"    📁 Checking directory: {item}")
-                if item == target:
-                    return item_path
-            else:
+    """Iteratively search for a directory named target using BFS with cycle detection"""
+    
+    # Use a stack for iterative traversal (could also use deque for true BFS)
+    stack = [directory]
+    visited_inodes = set()
+    
+    while stack:
+        current_dir = stack.pop()
+        
+        try:
+            # Get inode info for cycle detection
+            stat_info = os.stat(current_dir)
+            inode_key = (stat_info.st_dev, stat_info.st_ino)
+            
+            # Skip if we've already visited this inode (handles hard links and cycles)
+            if inode_key in visited_inodes:
+                continue
+            visited_inodes.add(inode_key)
+            
+            # Use os.scandir for better performance
+            with os.scandir(current_dir) as entries:
+                # First pass: check if target exists in current directory
+                for entry in entries:
+                    if entry.is_dir(follow_symlinks=False):
+                        print(f"    📁 Checking directory: {entry.name}")
+                        if entry.name == target:
+                            return entry.path
+                
+                # Second pass: add subdirectories to stack for further searching
+                # Reset the scandir iterator
                 pass
-
-        # If not found, recursively search subdirectories
-        for item in items:
-            item_path = os.path.join(directory, item)
-            if os.path.isdir(item_path):
-                result = search_directory(item_path, target)
-                if result:
-                    return result
-    except (PermissionError, OSError) as e:
-        print(f"    ❌ Permission denied or error in {directory}: {e}")
-        pass
-
+            
+            # Rescan for subdirectories to add to stack
+            with os.scandir(current_dir) as entries:
+                for entry in entries:
+                    if entry.is_dir(follow_symlinks=False):
+                        # Skip symlinked directories to prevent infinite recursion
+                        if entry.is_symlink():
+                            print(f"    🔗 Skipping symlinked directory: {entry.name}")
+                            continue
+                        
+                        # Check if we've already visited this inode
+                        try:
+                            entry_stat = entry.stat(follow_symlinks=False)
+                            entry_inode = (entry_stat.st_dev, entry_stat.st_ino)
+                            if entry_inode not in visited_inodes:
+                                stack.append(entry.path)
+                        except (PermissionError, OSError):
+                            # Skip directories we can't stat
+                            continue
+                            
+        except (PermissionError, OSError) as e:
+            print(f"    ❌ Permission denied or error in {current_dir}: {e}")
+            continue
+    
     return None
 
 def main(find_item):
