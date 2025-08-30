@@ -31,7 +31,7 @@ git clone https://github.com/mostypc123/crust && cd crust && pip install . && cd
 
 ## 🛡️ License
 
-This project is currently under development. License information will be provided in future versions.
+We use an edited version of the MIT license.
 
 ## 📫 Contributing
 
