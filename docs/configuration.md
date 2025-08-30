@@ -154,6 +154,9 @@ your-cohere-api-key-here
 - Add `.crust/cohere-api-key.txt` to your `.gitignore`
 - The file should contain only the API key, no extra whitespace or comments
 
+In apps like Github Desktop, you can also uncheck the API key file before you put it in your .gitignore as a temporary fix.
+
+
 ## 🎨 Customization Options
 
 ### Prompt Customization
