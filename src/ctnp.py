@@ -1,6 +1,14 @@
 import os
 
 def python(project_name):
+    """
+    Create a basic Python project skeleton in the current working directory.
+    
+    This function scaffolds a minimal Python project: it creates requirements.txt (empty), writes a pyproject.toml skeleton (the file contains a literal name field 'name = "{project_name}"' and other template entries), writes README.md containing the provided project_name, creates a src/ package with __init__.py (setting __version__ = "0.1.0") and an empty main.py, creates a docs/ directory, initializes a Git repository (runs `git init`), and writes a .gitignore that ignores .vscode, .idea, and Python cache patterns. Filesystem operations are performed directly and sequentially; there is no return value and no internal error handling—exceptions raised by file or OS operations will propagate.
+     
+    Parameters:
+        project_name (str): Project name written into README.md. Note that the pyproject.toml created by this function contains the literal placeholder "{project_name}" and is not programmatically substituted.
+    """
     print("Making a Python project structure...")
 
     print("Creating requirements.txt")

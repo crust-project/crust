@@ -1,7 +1,18 @@
 import os
 
 def search_directory(directory, target):
-    """Recursively search for a directory named target starting from directory"""
+    """
+    Recursively search for a directory named `target` starting from `directory`.
+    
+    Searches the filesystem depth-first: first checks immediate subdirectories under `directory` for a name match, then recursively searches each subdirectory. Prints progress for each directory checked. PermissionError and OSError while listing a directory are caught, a diagnostic message is printed, and the search continues.
+    
+    Parameters:
+        directory (str): Filesystem path to start searching from.
+        target (str): Name of the directory to find.
+    
+    Returns:
+        str or None: The full path to the first found directory named `target`, or None if not found or if an error prevents accessing parts of the tree.
+    """
 
     try:
         items = os.listdir(directory)
@@ -30,6 +41,14 @@ def search_directory(directory, target):
     return None
 
 def main(find_item):
+    """
+    Search for a directory named `find_item` starting from the current working directory, print progress, and if found attempt to change into it.
+    
+    Displays a sorted list of immediate subdirectories in the current working directory, then performs a recursive search for the first directory whose name matches `find_item`. Prints status messages for start, progress, errors, success, and failure. If the target is found, attempts to change the process's current working directory to the found path; any permission or OS errors are caught and only reported (not raised).
+    
+    Parameters:
+        find_item (str): Name of the directory to locate (matched against directory basenames). The search is case-sensitive and returns the first match found in a depth-first traversal.
+    """
     start_dir = os.getcwd()
     print(f"Starting search from: {start_dir}")
     print(f"Looking for directory: {find_item}")
