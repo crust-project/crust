@@ -1,6 +1,6 @@
 # Maintainer: Juraj Kollár <mostypc7@gmail.com>
 pkgname=crust-git
-pkgver=b01.0.g7b73b7a   # Will be auto-generated
+pkgver=b01.18.g1728b7b   # Will be auto-generated
 pkgrel=1
 pkgdesc="Crust - Python package installed via pip"
 arch=('any')
