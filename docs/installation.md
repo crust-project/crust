@@ -10,7 +10,7 @@ This guide will help you install and set up Crust Shell on your system.
 - **Internet Connection** - For AI features and package searching
 
 ```bash
-git clone https://github.com/mostypc123/crust && cd crust && pip install . --break-system-packages && cd .. && rm -rf crust
+pip install crust-shell
 ```
 
 ---
