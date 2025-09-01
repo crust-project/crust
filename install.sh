@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
-
 # Ensure script is running in Bash
 if [ -z "${BASH_VERSION:-}" ]; then
     echo "❌ ERROR: This script must be run with Bash, not sh or zsh."
