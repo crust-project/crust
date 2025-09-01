@@ -31,6 +31,15 @@ pip install crust-shell
 
 If using linux, --break-system-packages may be neccesarry to make pip actually install this. If you do not want to proceed with that, use pipx (not tested).
 
+On Arch Linux, use AUR:
+```bash
+yay -S crust-git
+```
+Or with paru:
+```bash
+paru -S crust-git
+```
+
 ## 🛡️ License
 
 We use an edited version of the MIT license.
