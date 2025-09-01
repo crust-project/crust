@@ -1,14 +1,25 @@
 #!/usr/bin/env bash
 
-set -e  # Exit immediately if a command fails
-set -u  # Treat unset variables as errors
+set -euo pipefail
+
+# Ensure script is running in Bash
+if [ -z "${BASH_VERSION:-}" ]; then
+    echo "❌ ERROR: This script must be run with Bash, not sh or zsh."
+    echo "Use: bash $0"
+    exit 1
+fi
+
+# Normalize line endings in case of CRLF
+if file "$0" | grep -q CRLF; then
+    echo "⚠️ Converting CRLF line endings to LF"
+    sed -i 's/\r$//' "$0"
+fi
 
 echo "⚠️ Dependencies required: git and pip"
 echo "Cloning and installing Crust..."
 
-# Clone repo
 git clone https://github.com/mostypc123/crust
-cd crust || { echo "Failed to enter crust directory"; exit 1; }
+cd crust || { echo "❌ Failed to enter crust directory"; exit 1; }
 
 # Detect platform
 OS="$(uname -s)"
@@ -20,7 +31,7 @@ if [ -f /etc/os-release ]; then
     DISTRO_LIKE="$ID_LIKE"
 fi
 
-# Platform-specific messages
+# Platform messages
 case "$OS" in
     Darwin)
         echo "⚠️ Crust is untested on macOS. Please help test it!"
@@ -38,9 +49,8 @@ case "$OS" in
         ;;
 esac
 
-# Ask about --break-system-packages
+# Prompt for --break-system-packages
 read -p "Use --break-system-packages? [Y/n] " choice
-
 case "$choice" in
     [nN]*)
         pip install .
@@ -50,7 +60,7 @@ case "$choice" in
         ;;
 esac
 
-# Clean up
+# Cleanup
 cd ..
 rm -rf crust
 
