@@ -35,7 +35,7 @@ esac
 # Ask about --break-system-packages
 read -p "Use --break-system-packages? [Y/n] " choice
 case "$choice" in
-  [nN]*) pip install . ;;
+  [nN]* ) pip install . ;;
   *) pip install . --break-system-packages ;;
 esac
 
