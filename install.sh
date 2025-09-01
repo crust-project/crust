@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 
-# Ensure script is running in Bash
+# Ensure running in Bash
 if [ -z "${BASH_VERSION:-}" ]; then
-    echo "❌ ERROR: This script must be run with Bash, not sh or zsh."
+    echo "❌ ERROR: This script must be run with Bash."
     echo "Use: bash $0"
     exit 1
-fi
-
-# Normalize line endings in case of CRLF
-if file "$0" | grep -q CRLF; then
-    echo "⚠️ Converting CRLF line endings to LF"
-    sed -i 's/\r$//' "$0"
 fi
 
 echo "⚠️ Dependencies required: git and pip"
@@ -23,13 +17,15 @@ cd crust || { echo "❌ Failed to enter crust directory"; exit 1; }
 OS="$(uname -s)"
 DISTRO="unknown"
 DISTRO_LIKE=""
+
 if [ -f /etc/os-release ]; then
+    # shellcheck disable=SC1091
     . /etc/os-release
-    DISTRO="$ID"
-    DISTRO_LIKE="$ID_LIKE"
+    DISTRO="${ID:-unknown}"
+    DISTRO_LIKE="${ID_LIKE:-}"
 fi
 
-# Platform messages
+# Platform-specific messages
 case "$OS" in
     Darwin)
         echo "⚠️ Crust is untested on macOS. Please help test it!"
@@ -47,7 +43,7 @@ case "$OS" in
         ;;
 esac
 
-# Prompt for --break-system-packages
+# Prompt user for --break-system-packages
 read -p "Use --break-system-packages? [Y/n] " choice
 case "$choice" in
     [nN]*)
@@ -58,7 +54,7 @@ case "$choice" in
         ;;
 esac
 
-# Cleanup
+# Clean up
 cd ..
 rm -rf crust
 
