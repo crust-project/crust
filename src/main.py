@@ -29,6 +29,15 @@ try:
 except Exception as e:
     print(f"warn: no aliases were loaded due to an {e} error")
 
+try:
+    file_path = Path(str(configs) + "/prompt.py")
+    spec = importlib.util.spec_from_file_location("prompt", file_path)
+    prompt_module = importlib.util.module_from_spec(spec)
+    sys.modules["prompt"] = prompt_module
+    spec.loader.exec_module(prompt_module)
+except Exception as e:
+    print(f"warn: no prompt was loaded due to an {e} error")
+
 # todo: move to .crust
 # Try to run any custom startup commands
 """
@@ -173,8 +182,6 @@ def main():
     # Initialize readline for history and tab completion
     """
     Run the interactive Crust shell REPL: initialize readline (history and tab completion), display a prompt with VENV and git context, read user input, and dispatch built-in commands, shell commands, alias expansion, and the AI-assisted `.question` flow. The loop handles special built-ins (ls, lsusb, disk usage/df, aur_check, capk, troubleshooting, about, cd, ctnp), supports alias replacement, and falls back to invoking the system shell for other commands.
-    
-    This function has multiple side effects: it changes the current working directory, executes external commands, may read/write files (including overwriting files when handling `.edit-file` from the AI), creates/uses a Cohere client for the `.question` flow, and saves command history on exit. It handles Ctrl+C and Ctrl+D to exit cleanly and catches unexpected errors to keep the REPL running.
     """
     history_file = setup_readline()
     
@@ -193,42 +200,11 @@ def main():
             except NameError:
                 show_venv = True"""
             
-            # Get current virtual environment name (if any)
-            venv_path = os.environ.get('VIRTUAL_ENV') or sys.prefix
-            venv_name = " " + os.path.basename(venv_path.rstrip(os.sep)) if venv_path else None
-            if venv_name == " usr":
-                venv_name = ""
-
-            git_info = ""
             try:
-                # Check if in a git repo and get repo/branch info
-                git_dir = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True)
-                if git_dir.returncode == 0:
-                    repo_path = git_dir.stdout.strip()
-                    repo_name = os.path.basename(repo_path)
-                    # Get branch name
-                    branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True, text=True)
-                    branch_name = branch.stdout.strip() if branch.returncode == 0 else '?'
-                    git_info = f"[cyan]\uf1d3 {repo_name} [/][bold green] {branch_name}[/] "
+                prompt_module.main()
             except Exception:
-                # Ignore git errors
-                pass
-            
-            username = os.getlogin()
-            path = os.getcwd().replace("/home/" + username, " ~")
-
-            # Print prompt with git, venv, and current directory info. string for now for the commented code above
-            if "show_venv and venv_name": 
-                venv_name = f"[pink]{venv_name}"
-            else:
-                venv_name = ""
-            base.console.print(
-                f"{git_info}"
-                f"[pink1]{venv_name}[/] "
-                f"[cyan][/][bright_cyan]{path}[/]"
-                f"[bold pink1] ＋ [/]",
-                end=""
-            )
+                print("fallback prompt")
+                print(os.getcwd() + " > ", end="")
 
             # Read user input with readline (supports history and tab completion)
             try:
