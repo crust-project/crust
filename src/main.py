@@ -38,9 +38,9 @@ try:
 except Exception as e:
     print(f"warn: no prompt was loaded due to an {e} error")
 
+"""
 # todo: move to .crust
 # Try to run any custom startup commands
-"""
 try:
     custom_commands.main()
 except Exception as e:
@@ -485,9 +485,60 @@ def main():
                 except Exception as e:
                     print(f"error checking for aliases\n>tip: you likely have no .crust folder in your computer\nmessage: {e}")
                 try:
-                    subprocess.run(["bash", "-c", prompt])
+                    result = subprocess.run(["bash", "-c", prompt], text=True)
+                    
+                    # Check if command failed (non-zero return code)
+                    if result.returncode != 0 and configs != "default":
+                        try:
+                            with open(configs + "/cohere-api-key.txt", "r") as f:
+                                key_content = f.read().strip()
+
+                            # Use existing co client if available, otherwise create new one
+                            try:
+                                if not co:
+                                    co = cohere.Client(key_content)
+                            except (NameError, AttributeError):
+                                co = cohere.Client(key_content)
+
+                            # Get distro name
+                            distro = subprocess.run(["cat", "/etc/os-release"], capture_output=True, text=True)
+
+                            fix_prompt = f"""Command '{prompt}' failed with exit code {result.returncode}.
+
+System info: {distro.stdout.strip()}
+
+Fix this command by:
+- If package not found: install it with the right package manager (yay/paru for AUR on Arch, apt on Ubuntu, etc.)
+- If typo: fix the spelling
+- Use sudo when needed
+- Only reply with the corrected command, nothing else
+
+Fixed command:"""
+                            response = co.chat(
+                                    message=fix_prompt,
+                                    model="command-r",
+                                    max_tokens=50,
+                                    temperature=0.1
+                                    )
+
+                            fix_command = response.text.strip()
+                            print(f"(Enter) {fix_command} (n, Enter) cancel ", end="")
+                            fix = input()
+
+                            if fix == "":
+                                os.system(f"bash -c \"{fix_command}\"")
+                            else:
+                                pass
+                                
+                        except Exception:
+                            pass  # Silently fail if no config or error
+                    
                 except KeyboardInterrupt:
                     base.console.print("\n KeyboardInterrupt detected during command. Returning to prompt...\n", style="bold red")
+                except Exception as e:
+                    print(f"Error running command: {e}")
+
+
         except KeyboardInterrupt:
             # Handle Ctrl+C to exit the shell
             base.console.print("\n KeyboardInterrupt detected. Exiting...\n", style="bold red")
