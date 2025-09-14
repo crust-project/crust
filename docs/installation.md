@@ -9,8 +9,18 @@ This guide will help you install and set up Crust Shell on your system.
 - **Git** (optional) - For git integration features
 - **Internet Connection** - For AI features and package searching
 
+If you use pip:
 ```bash
-git clone https://github.com/mostypc123/crust && cd crust && pip install . --break-system-packages && cd .. && rm -rf crust
+pip install crust-shell
+```
+
+If you are on Arch Linux:
+```bash
+yay -S crust-git
+```
+Or with paru:
+```bash
+paru -S crust-git
 ```
 
 ---

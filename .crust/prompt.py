@@ -42,6 +42,7 @@ def main():
         f"{git_info}"
         f"{venv_name}"
         f"[cyan][/][bright_cyan]󰉋{path}[/]"
+        f"[cyan][/][bright_cyan]{path}[/]"
         f"[bold pink1] ＋ [/]",
         end=""
     )

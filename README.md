@@ -5,10 +5,10 @@
 [![License](https://img.shields.io/badge/license-edited%20MIT-yellow.svg)]()
 [![Made with ❤️](https://img.shields.io/badge/made%20with-%E2%9D%A4-red.svg)](https://github.com/mostypc123)
 
-THERE IS NO API KEY IN THE API KEY FILE. ITS THERE FOR THE PROJECT STRUCTURE.
-
 Crust is an interactive Linux shell written in Python, designed with a modern interface, AI integration, and enhanced tooling for common system tasks.
-Python devs, please add ✨**arrow support**✨ to `input()`.
+
+**Note:** I am currecntly putting crust into package managers, but it is not ready yet. Until there is an announcment, any packages made by me that are crust are not ready. 
+**Edit**: Crust is available on PyPi! Use the crust-shell package to install it, as shown in the Documentation section.
 
 ## ✨ Features
 
@@ -24,14 +24,25 @@ Python devs, please add ✨**arrow support**✨ to `input()`.
 ## 📖 Documentation
 https://mostypc123.is-a.dev/crust
 
-Very quick installation:
+Installation:
 ```bash
-git clone https://github.com/mostypc123/crust && cd crust && pip install . && cd .. && rm -rf crust
+pip install crust-shell
+```
+
+If using linux, --break-system-packages may be neccesarry to make pip actually install this. If you do not want to proceed with that, use pipx (not tested).
+
+On Arch Linux, use AUR:
+```bash
+yay -S crust-git
+```
+Or with paru:
+```bash
+paru -S crust-git
 ```
 
 ## 🛡️ License
 
-This project is currently under development. License information will be provided in future versions.
+We use an edited version of the MIT license.
 
 ## 📫 Contributing
 
