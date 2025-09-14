@@ -23,7 +23,7 @@ def main():
             # Get branch name
             branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True, text=True)
             branch_name = branch.stdout.strip() if branch.returncode == 0 else '?'
-            git_info = f"[cyan]\uf1d3 {repo_name} [/][bold green] {branch_name}[/] "
+            git_info = f"[cyan] {repo_name} [/][bold green] {branch_name}[/] "
     except Exception:
         # Ignore git errors
         pass
@@ -34,13 +34,14 @@ def main():
     # Print prompt with git, venv, and current directory info
     show_venv = True  # You can change this to False if you don't want to show venv
     if show_venv and venv_name: 
-        venv_name = f"[pink]{venv_name}[/]"
+        venv_name = f"[pink] {venv_name}[/]"
     else:
         venv_name = ""
     
     base.console.print(
         f"{git_info}"
         f"{venv_name}"
+        f"[cyan][/][bright_cyan]󰉋{path}[/]"
         f"[cyan][/][bright_cyan]{path}[/]"
         f"[bold pink1] ＋ [/]",
         end=""
