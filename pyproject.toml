@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "crust-shell"
-version = "0.1.1"
+version = "0.1.2"
 description = "Crust – a Python-based Linux shell with aliases and more."
 readme = "README.md"
 license-files = ["LICENSE"]
