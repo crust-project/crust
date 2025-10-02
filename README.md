@@ -7,9 +7,6 @@
 
 Crust is an interactive Linux shell written in Python, designed with a modern interface, AI integration, and enhanced tooling for common system tasks.
 
-**Note:** I am currecntly putting crust into package managers, but it is not ready yet. Until there is an announcment, any packages made by me that are crust are not ready. 
-**Edit**: Crust is available on PyPi! Use the crust-shell package to install it, as shown in the Documentation section.
-
 ## ✨ Features
 
 - ⚙️ Custom startup hook support via `custom_commands.py`
@@ -22,7 +19,7 @@ Crust is an interactive Linux shell written in Python, designed with a modern in
 - 🧠 Neofetch context awareness for AI assistant
 
 ## 📖 Documentation
-https://mostypc123.is-a.dev/crust
+https://crust-project.github.io/crust/
 
 Installation:
 ```bash
