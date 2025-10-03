@@ -15,6 +15,8 @@ import readline
 import ctnp
 import cd
 
+pkgs = ""
+
 configs = config_find.find_crust_folder()
 if configs == None: configs = "default"; print("warn: configs are set as default")
 print(configs)
@@ -486,9 +488,20 @@ def main():
                     print(f"error checking for aliases\n>tip: you likely have no .crust folder in your computer\nmessage: {e}")
                 try:
                     result = subprocess.run(["bash", "-c", prompt], text=True)
-                    
+                     
                     # Check if command failed (non-zero return code)
-                    if result.returncode != 0 and configs != "default":
+                    if result.returncode != 0:
+                        if result.returncode == 127:
+                            with open(configs + "/cmds.py", "r") as f:
+                                cmds = f.read()
+                            if "car" in cmds:
+                                os.system("curl -s -L -o pkgs https://raw.githubusercontent.com/crust-project/car/refs/heads/main/existing-packages.txt")
+                                with open("pkgs", "r") as f:
+                                    pkgs = f.read().splitlines()
+                                os.remove("pkgs")
+                                if prompt.split()[0] in pkgs:
+                                    print(prompt.split()[0] + " was not found, but can be installed with:")
+                                    print("     car get " + prompt.split()[0] )
                         try:
                             with open(configs + "/cohere-api-key.txt", "r") as f:
                                 key_content = f.read().strip()
